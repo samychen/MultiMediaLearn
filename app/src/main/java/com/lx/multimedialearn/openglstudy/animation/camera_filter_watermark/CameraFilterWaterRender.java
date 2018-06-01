@@ -197,7 +197,6 @@ public class CameraFilterWaterRender implements GLSurfaceView.Renderer {
                 ByteBuffer bf;
                 try {
                     bf = mYuvQueue.take();
-
                     if (bf != null) {
                         BitmapUtils.saveRgb2Bitmap(bf, Environment.getExternalStorageDirectory().getAbsolutePath() + "/gl_dump_" + mWidth + "_" + mHeight + ".png", mWidth, mHeight);
                     }
@@ -345,6 +344,7 @@ public class CameraFilterWaterRender implements GLSurfaceView.Renderer {
         int[] grayTextureColorBuffer = new int[]{grayFbo[2]};
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, grayFrameBuffer[0]);
         GLES20.glUseProgram(mGrayProgram);
+        GLES20.glViewport(0, 0, mWidth, mHeight);
         //放位置，矩阵变换
         GLES20.glUniformMatrix4fv(mGrayMatrixLocation, 1, false, mGrayMatrix, 0);
         GLES20.glEnableVertexAttribArray(mGrayVertexLocation);

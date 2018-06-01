@@ -238,7 +238,7 @@ public class GLRenderThread3 extends Thread {
         long a = System.currentTimeMillis();
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, drawIndices.length, GLES30.GL_UNSIGNED_SHORT, mDrawIndicesBuffer);
         GLES30.glFinish();
-        Log.e("aa", "drawt=" + (System.currentTimeMillis() - a));//绘制时间10-20ms
+        Log.e("aa", "drawt=" + (System.currentTimeMillis() - a));//绘制时间10ms
 
 //        GLES30.glDisableVertexAttribArray(aPostionLocation);
 //        GLES30.glDisableVertexAttribArray(aTextureCoordLocation);
@@ -278,9 +278,6 @@ public class GLRenderThread3 extends Thread {
             drawFrame();
             final IntBuffer pixelBuffer = IntBuffer.allocate(mWidth * mHeight);
             pixelBuffer.position(0);
-            /**
-             * ~30ms
-             */
             int pw, pr;
             if (index%2 == 0) {
                 pw = pboId[0];
@@ -290,14 +287,16 @@ public class GLRenderThread3 extends Thread {
                 pr = pboId[0];
             }
             index++;
-//            GLES30.glPixelStorei(GLES30.GL_PACK_ALIGNMENT,1);
-//            GLES30.glReadBuffer(GLES30.GL_BACK);
+            GLES30.glPixelStorei(GLES30.GL_PACK_ALIGNMENT,4);//设置像素对齐值，默认值是4
+            GLES30.glReadBuffer(GLES30.GL_BACK);
             GLES30.glBindBuffer(GLES30.GL_PIXEL_PACK_BUFFER, pw);
             byte[] pixelArray = new byte[4*ySize];
             HomeActivity.readPixel(pixelArray, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, 0);
             GLES30.glBindBuffer(GLES30.GL_PIXEL_PACK_BUFFER, pr);
             Buffer buf = GLES30.glMapBufferRange(GLES30.GL_PIXEL_PACK_BUFFER, 0, 4*ySize, GLES30.GL_MAP_READ_BIT);
-
+            /**
+             * ~100-200ms
+             */
             ByteBuffer b = ((ByteBuffer) buf).order(ByteOrder.nativeOrder());
             long a = System.currentTimeMillis();
             b.get(pixelArray, 0, 4*ySize);

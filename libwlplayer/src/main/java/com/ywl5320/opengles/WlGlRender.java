@@ -129,7 +129,7 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         MyLog.d("onSurfaceCreated");
-        initMediacodecShader();
+        initMediacodecShader();//初始化硬件解码shader
         initYuvShader();
         initStop();
     }
@@ -222,7 +222,6 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
             wlOnGlSurfaceViewOncreateListener.onGlSurfaceViewOncreate(surface);
         }
     }
-
     /**
      * 使用硬件解码shader
      */
@@ -254,7 +253,7 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
         sampler_y = GLES20.glGetUniformLocation(programId_yuv, "sampler_y");
         sampler_u = GLES20.glGetUniformLocation(programId_yuv, "sampler_u");
         sampler_v = GLES20.glGetUniformLocation(programId_yuv, "sampler_v");
-
+        //生成三张纹理
         textureid_yuv = new int[3];
         GLES20.glGenTextures(3, textureid_yuv, 0);
         for (int i = 0; i < 3; i++) {
@@ -269,7 +268,7 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
         }
     }
-
+    //软解码
     private void renderYuv()
     {
         if(w > 0 && h > 0 && y != null && u != null && v != null)
@@ -281,7 +280,7 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
             textureBuffer.position(0);
             GLES20.glEnableVertexAttribArray(aTextureCoordHandle_yuv);
             GLES20.glVertexAttribPointer(aTextureCoordHandle_yuv,2,GLES20.GL_FLOAT,false,8, textureBuffer);
-
+            //三次纹理渲染，效率有待提高
             MyLog.d("renderFFmcodec");
             //使 GL_TEXTURE0 单元 活跃 opengl最多支持16个纹理
             //纹理单元是显卡中所有的可用于在shader中进行纹理采样的显存 数量与显卡类型相关，至少16个

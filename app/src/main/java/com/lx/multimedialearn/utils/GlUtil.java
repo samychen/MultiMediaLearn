@@ -576,7 +576,7 @@ public class GlUtil {
         //创建FrameBuffer，绑定Texture，在FrameBuffer上渲染
         GLES20.glGenFramebuffers(1, frameBuffer, 0);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer[0]);//渲染到fbo上
-
+        //绑定
         GLES20.glGenRenderbuffers(1, rbo, 0); //生成rbo，进行深度检测
         GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, rbo[0]);
         GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
@@ -584,6 +584,7 @@ public class GlUtil {
         GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
                 GLES20.GL_RENDERBUFFER, rbo[0]);
 
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
         GLES20.glGenTextures(1, textureColorBuffer, 0); //生成纹理，颜色纹理都渲染到这里
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureColorBuffer[0]);
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height,
@@ -600,7 +601,41 @@ public class GlUtil {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);//渲染到fbo上
         return result;
     }
-
+    public static int[] createFBO2(int width, int height) {
+        int[] result = new int[4];
+        int[] frameBuffer = new int[1];
+        int[] renderBuffer = new int[1];
+        int[] textureColorBuffer = new int[2];
+        GLES20.glGenFramebuffers(1, frameBuffer, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer[0]);//渲染到fbo上
+        GLES20.glGenRenderbuffers(1, renderBuffer, 0);
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, renderBuffer[0]);
+        GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
+                width, height);
+        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
+                GLES20.GL_RENDERBUFFER, renderBuffer[0]);
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
+        GLES20.glGenTextures(2, textureColorBuffer, 0);
+        for (int i = 0; i < 2; i++) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureColorBuffer[i]);
+//            if (i == 0) {
+//                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mBitmap, 0);
+//            } else {
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height,
+                        0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+//            }
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+            GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, textureColorBuffer[i], 0);
+        }
+        result[0] = frameBuffer[0];
+        result[1] = renderBuffer[0];
+        result[2] = textureColorBuffer[0];
+        result[3] = textureColorBuffer[1];
+        return result;
+    }
     /**
      * 解除绑定fbo中FrameBufferID，RenderBufferID
      * 注意：textureColorBufferID作为输出id，供下一步操作，需要在最后释放

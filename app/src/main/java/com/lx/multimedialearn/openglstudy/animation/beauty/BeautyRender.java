@@ -294,8 +294,6 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         /************使用fbo画相机****************/
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer[0]);
         mSurfaceTexture.updateTexImage(); //拿到最新的数据
-        //  GLES20.glEnable(GLES20.GL_BLEND);
-        //  GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         //绘制预览数据
         GLES20.glUseProgram(mCameraProgram);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -310,7 +308,6 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, mCameraDrawOrder.length, GLES20.GL_UNSIGNED_SHORT, mCameradrawListBuffer);
         GLES20.glDisableVertexAttribArray(mCameraVertexLocation);
         GLES20.glDisableVertexAttribArray(mCameraTextureCoordLocation);
-        //  GLES20.glDisable(GLES20.GL_BLEND);
 
         /*************画美颜Filter*****************************/
         int[] beautyFbo = GlUtil.createFBO(mWidth, mHeight);
@@ -337,6 +334,7 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         GLES20.glUniform1i(mBeautyTextureLocation, 0); //把纹理单元0传给片元着色器进行渲染
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         GLES20.glViewport(0, 0, mWidth, mHeight);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
         /**************画美颜mask蒙版（水印的方法可以改为这个）**********/
         int[] lookupFbo = GlUtil.createFBO(mWidth, mHeight);
@@ -367,12 +365,12 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         GLES20.glUniform1i(mLookupTexutreLocation, 0); //把纹理单元0传给片元着色器进行渲染
         GLES20.glUniform1f(mIntensityLocation, mIntensity);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-        GLES20.glViewport(0, 0, mWidth, mHeight);
-        GLES20.glDisable(GLES20.GL_BLEND);
+//        GLES20.glViewport(0, 0, mWidth, mHeight);
+//        GLES20.glDisable(GLES20.GL_BLEND);
         /*************使用last texture画在屏幕上**********************/
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0); //绑定回默认输出buffer，就是屏幕，然后绘画
         GLES20.glUseProgram(mLastProgram);
-        GLES20.glViewport(0, 0, mWidth, mHeight);
+//        GLES20.glViewport(0, 0, mWidth, mHeight);
         GLES20.glUniformMatrix4fv(mLastMatrixLocation, 1, false, mLastMatrix, 0);
         GLES20.glEnableVertexAttribArray(mLastVertexLocation);
         GLES20.glVertexAttribPointer(mLastVertexLocation, 2, GLES20.GL_FLOAT, false, 0, mLastVertexBuffer);
@@ -382,11 +380,11 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, lookupTextureColorBuffer[0]); //把纹理绑定到纹理单元0上
         GLES20.glUniform1i(mTextureLocation, 0); //把纹理单元0传给片元着色器进行渲染
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-        GLES20.glViewport(0, 0, mWidth, mHeight);
+//        GLES20.glViewport(0, 0, mWidth, mHeight);
 
         GLES20.glDeleteTextures(1, textureColorBuffer, 0); //先删除
         GLES20.glDeleteRenderbuffers(1, rbo, 0);
-        GLES20.glDeleteFramebuffers(1, fbo, 0);
+        GLES20.glDeleteFramebuffers(1, frameBuffer, 0);
         GLES20.glDeleteTextures(1, beautyTextureColorBuffer, 0);
         GLES20.glDeleteRenderbuffers(1, beautyRbo, 0);
         GLES20.glDeleteFramebuffers(1, beautyFbo, 0);

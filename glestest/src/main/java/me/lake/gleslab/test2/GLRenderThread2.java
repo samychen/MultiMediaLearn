@@ -1,4 +1,5 @@
 package me.lake.gleslab.test2;
+
 import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.GLES20;
@@ -265,7 +266,7 @@ public class GLRenderThread2 extends Thread {
             pixelBuffer.position(0);
             long a=System.currentTimeMillis();
             /**
-             * toslow
+             * too slow
              */
             GLES20.glReadPixels(0, 0, mWidth, mHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
             Log.e("aa", "ttttttt="+(System.currentTimeMillis()-a));
