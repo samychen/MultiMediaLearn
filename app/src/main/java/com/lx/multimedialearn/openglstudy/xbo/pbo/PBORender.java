@@ -173,7 +173,7 @@ public class PBORender implements GLSurfaceView.Renderer {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureID); //把纹理绑定到纹理单元0上
         GLES20.glUniform1i(mTextureLocation, 0); //把纹理单元0传给片元着色器进行渲染
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4); //数据处理完后，使用readPiex
-
+        // 单PBO性能差
         //创建pbo，绑定pbo，读取数据到pbo，映射到内存，展示到ImageView上
         int[] pboBuffer = new int[1];
         GLES30.glGenBuffers(1, pboBuffer, 0);
@@ -181,14 +181,13 @@ public class PBORender implements GLSurfaceView.Renderer {
         //初始化宽高，考虑字节对齐
         //OpenGLES默认应该是4字节对齐应，但是不知道为什么在索尼Z2上效率反而降低
         //并且跟ImageReader最终计算出来的rowStride也和我这样计算出来的不一样，这里怀疑跟硬件和分辨率有关
-        //这里默认取得128的倍数，这样效率反而高，为什么？
-        int align = 128;//128字节对齐
+        int align = 4;//32位的cpu4字节对齐，64的cpu应该是8字节对齐，但是在索尼z2上128字节对齐才没有降低效率
         int mPixelStride = 4;
         int mRowStride = (width * mPixelStride + (align - 1)) & ~(align - 1); //字节对齐
         int mPboSize = mRowStride * height;
 
         GLES30.glBufferData(
-                GLES30.GL_PIXEL_PACK_BUFFER,
+                GLES30.GL_PIXEL_PACK_BUFFER,//GL_PIXEL_PACK_BUFFER传递像素数据到PBO中,GL_PIXEL_UNPACK_BUFFER从PBO中传回数据
                 mPboSize,
                 null,
                 GLES30.GL_STATIC_READ); //从OpenGL中读数据到PBO

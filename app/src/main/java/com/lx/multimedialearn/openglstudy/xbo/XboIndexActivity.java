@@ -9,6 +9,7 @@ import com.lx.multimedialearn.R;
 import com.lx.multimedialearn.main.MainAdapter;
 import com.lx.multimedialearn.main.TabModel;
 import com.lx.multimedialearn.openglstudy.xbo.fbo.FBOActivity;
+import com.lx.multimedialearn.openglstudy.xbo.pbo.PBO2Activity;
 import com.lx.multimedialearn.openglstudy.xbo.pbo.PBOActivity;
 import com.lx.multimedialearn.openglstudy.xbo.vbo.VBOActivity;
 
@@ -30,7 +31,8 @@ public class XboIndexActivity extends AppCompatActivity {
         List<TabModel> list = new ArrayList<>();
         list.add(new TabModel("1. VBO使用", "VBO GPU中开辟空间缓存顶点数据，减少读取内存占用CPU时间", VBOActivity.class));
         list.add(new TabModel("2. PBO使用", "GPU读取纹理，减少占用DMA时间", PBOActivity.class));
-        list.add(new TabModel("3. FBO使用", "FBO离屏渲染，双缓冲，EGL上下文，EGLSurfaceView，多重滤镜", FBOActivity.class));
+        list.add(new TabModel("3. 双PBO使用", "GPU读取纹理，减少占用DMA时间", PBO2Activity.class));
+        list.add(new TabModel("4. FBO使用", "FBO离屏渲染，双缓冲，EGL上下文，EGLSurfaceView，多重滤镜", FBOActivity.class));
         mRecContent.setAdapter(new MainAdapter(list));
     }
 }

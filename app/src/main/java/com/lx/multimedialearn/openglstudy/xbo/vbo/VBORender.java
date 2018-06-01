@@ -89,7 +89,6 @@ public class VBORender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height); //图像要放的位置
-
     }
 
     @Override
