@@ -61,7 +61,7 @@ public class WlGlSurfaceView extends GLSurfaceView{
             requestRender();
         }
     }
-
+    //截屏
     public void cutVideoImg()
     {
         if(wlGlRender != null)

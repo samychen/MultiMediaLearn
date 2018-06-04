@@ -1,6 +1,5 @@
 package com.ywl5320.wlplayer;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -10,10 +9,10 @@ import android.view.Surface;
 
 import com.ywl5320.listener.WlOnCompleteListener;
 import com.ywl5320.listener.WlOnCutVideoImgListener;
+import com.ywl5320.listener.WlOnErrorListener;
 import com.ywl5320.listener.WlOnGlSurfaceViewOncreateListener;
 import com.ywl5320.listener.WlOnInfoListener;
 import com.ywl5320.listener.WlOnLoadListener;
-import com.ywl5320.listener.WlOnErrorListener;
 import com.ywl5320.listener.WlOnPreparedListener;
 import com.ywl5320.listener.WlOnStopListener;
 import com.ywl5320.listener.WlStatus;
@@ -155,7 +154,6 @@ public class WlPlayer {
         });
     }
 
-
     /**
      * 准备
      * @param url
@@ -243,13 +241,9 @@ public class WlPlayer {
         wlSetAudioChannels(index);
     }
 
-
-
     public void setWlOnPreparedListener(WlOnPreparedListener wlOnPreparedListener) {
         this.wlOnPreparedListener = wlOnPreparedListener;
     }
-
-
 
     public void setWlOnErrorListener(WlOnErrorListener wlOnErrorListener) {
         this.wlOnErrorListener = wlOnErrorListener;
@@ -367,8 +361,6 @@ public class WlPlayer {
         return isOnlySoft;
     }
 
-
-
     private void onLoad(boolean load)
     {
         if(wlOnLoadListener != null)
@@ -465,7 +457,7 @@ public class WlPlayer {
         }
         else if(type == 2)
         {
-            return "video/hevc";
+            return "video/hevc";//h265编码
         }
         else if(type == 3)
         {

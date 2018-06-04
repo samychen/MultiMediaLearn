@@ -11,7 +11,6 @@ void *decodeThread(void *data)
     pthread_exit(&wlFFmpeg->decodThread);
 }
 
-
 int WlFFmpeg::preparedFFmpeg() {
     pthread_create(&decodThread, NULL, decodeThread, this);
     return 0;
@@ -239,7 +238,6 @@ int WlFFmpeg::getAvCodecContext(AVCodecParameters *parameters, WlBasePlayer *wlB
     return 0;
 }
 
-
 WlFFmpeg::~WlFFmpeg() {
     pthread_mutex_destroy(&init_mutex);
     if(LOG_SHOW)
@@ -247,7 +245,6 @@ WlFFmpeg::~WlFFmpeg() {
         LOGE("~WlFFmpeg() 释放了");
     }
 }
-
 
 int WlFFmpeg::getDuration() {
     return duration;
@@ -280,7 +277,7 @@ int WlFFmpeg::start() {
     }
     else if(mimeType == 2)
     {
-        mimType =  av_bitstream_filter_init("hevc_mp4toannexb");
+        mimType =  av_bitstream_filter_init("hevc_mp4toannexb");//h265解码
     }
     else if(mimeType == 3)
     {
@@ -296,19 +293,19 @@ int WlFFmpeg::start() {
         exit = false;
         if(wlPlayStatus->pause)//暂停
         {
-            av_usleep(1000 * 100);
+            av_usleep(1000 * 100);//CPU休眠，减少CPU操作频度
             continue;
         }
         if(wlAudio != NULL && wlAudio->queue->getAvPacketSize() > 100)
         {
 //            LOGE("wlAudio 等待..........");
-            av_usleep(1000 * 100);
+            av_usleep(1000 * 100);//CPU休眠
             continue;
         }
         if(wlVideo != NULL && wlVideo->queue->getAvPacketSize() > 100)
         {
 //            LOGE("wlVideo 等待..........");
-            av_usleep(1000 * 100);
+            av_usleep(1000 * 100);//CPU休眠
             continue;
         }
         AVPacket *packet = av_packet_alloc();
@@ -328,7 +325,7 @@ int WlFFmpeg::start() {
                 count++;
                 if(LOG_SHOW)
                 {
-                    LOGE("解码第 %d 帧", count);
+                    LOGE("读取第 %d 帧", count);
                 }
                 wlAudio->queue->putAvpacket(packet);
             }else if(wlVideo != NULL && packet->stream_index == wlVideo->streamIndex)
@@ -336,6 +333,7 @@ int WlFFmpeg::start() {
                 if(mimType != NULL && !isavi)
                 {
                     uint8_t *data;
+                    //添加AVPacket包体信息
                     av_bitstream_filter_filter(mimType, pFormatCtx->streams[wlVideo->streamIndex]->codec, NULL, &data, &packet->size, packet->data, packet->size, 0);
                     uint8_t *tdata = NULL;
                     tdata = packet->data;
@@ -481,7 +479,7 @@ int WlFFmpeg::getMimeType(const char *codecName) {
         return 1;
     }
     if(strcmp(codecName, "hevc") == 0)
-    {
+    {//h265编码
         return 2;
     }
     if(strcmp(codecName, "mpeg4") == 0)
@@ -561,7 +559,7 @@ void WlFFmpeg::setVideoChannel(int id) {
         wlVideo->rate = 1000 / videochannels.at(id)->fps;
         if(videochannels.at(id)->fps >= 60)
         {
-            wlVideo->frameratebig = true;
+            wlVideo->frameratebig = true;//高清视频
         } else{
             wlVideo->frameratebig = false;
         }

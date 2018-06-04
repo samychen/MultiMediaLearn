@@ -168,7 +168,7 @@ int WlQueue::noticeThread() {
     pthread_cond_signal(&condPacket);
     return 0;
 }
-
+// 丢弃非关键帧直到下一关键帧
 int WlQueue::clearToKeyFrame() {
     pthread_cond_signal(&condPacket);
     pthread_mutex_lock(&mutexPacket);

@@ -35,7 +35,6 @@ public class GLRenderThread3 extends Thread {
     EGLContext mEglContext;
     int mProgram;
 
-
     Context mContext;
     boolean quit;
     int mWidth = 1280;
@@ -229,6 +228,7 @@ public class GLRenderThread3 extends Thread {
                     GLES30.GL_UNSIGNED_BYTE,
                     vBuf);
         }
+
         //=================================
 //        GLES30.glGenBuffers(1, i);
 //        pbo = i.array()[0];

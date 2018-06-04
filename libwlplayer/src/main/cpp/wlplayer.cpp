@@ -21,7 +21,7 @@ Java_com_ywl5320_wlplayer_WlPlayer_wlPrepared(JNIEnv *env, jobject instance, jst
     {
         wlFFmpeg = new WlFFmpeg(wlJavaCall, url, isOnlyMusic);
         wlJavaCall->onLoad(WL_THREAD_MAIN, true);
-        wlFFmpeg->preparedFFmpeg();
+        wlFFmpeg->preparedFFmpeg();//创建解码线程
     }
 }
 

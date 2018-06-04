@@ -247,7 +247,7 @@ int WlAudio::getPcmData(void **pcm) {
     isExit = true;
     return data_size;
 }
-
+//缓存接口回调
 void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void * context)
 {
     WlAudio *wlAudio = (WlAudio *) context;
@@ -293,7 +293,6 @@ int WlAudio::initOpenSL() {
     SLDataLocator_OutputMix outputMix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
     SLDataSink audioSnk = {&outputMix, 0};
 
-
     // 第三步，配置PCM格式信息
     SLDataLocator_AndroidSimpleBufferQueue android_queue={SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,2};
 
@@ -307,7 +306,6 @@ int WlAudio::initOpenSL() {
             SL_BYTEORDER_LITTLEENDIAN//结束标志
     };
     SLDataSource slDataSource = {&android_queue, &pcm};
-
 
     const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE, SL_IID_EFFECTSEND, SL_IID_VOLUME};
     const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};

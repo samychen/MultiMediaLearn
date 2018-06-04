@@ -62,9 +62,9 @@ public class BeautyRender implements GLSurfaceView.Renderer {
     };
     private float mCameraTextureCoords[] = {
             0.0f, 0.0f, //左上
-            1.0f, 0.0f, //左下
+            1.0f, 0.0f, //右上
             1.0f, 0.9f, //右下
-            0.0f, 0.9f, //右上
+            0.0f, 0.9f, //左下
     };
     private float[] mCameraMatrix = { //镜像，需要旋转
             1.0f, 0.0f, 0.0f, 0.0f,
@@ -303,7 +303,7 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         GLES20.glVertexAttribPointer(mCameraVertexLocation, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, mCameraVertexBuffer);
         GLES20.glEnableVertexAttribArray(mCameraTextureCoordLocation);
         GLES20.glVertexAttribPointer(mCameraTextureCoordLocation, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, mCameraTextureCoordsBuffer);
-        //进行图形的转换
+        //进行图形的转换 镜像，需要旋转
         GLES20.glUniformMatrix4fv(mCameraMatrixLocation, 1, false, mCameraMatrix, 0);
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, mCameraDrawOrder.length, GLES20.GL_UNSIGNED_SHORT, mCameradrawListBuffer);
         GLES20.glDisableVertexAttribArray(mCameraVertexLocation);
@@ -322,9 +322,9 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         GLES20.glUniformMatrix4fv(mBeautyMatrixLocation, 1, false, mBeautyMatrix, 0);
         GLES20.glUniform1i(mHWidth, mWidth);
         GLES20.glUniform1i(mHHeight, mHeight);
-        GLES20.glUniform1f(mHaaCoef, aaCoef);
-        GLES20.glUniform1f(mHmixCoef, mixCoef);
-        GLES20.glUniform1i(mHiternum, iternum);
+        GLES20.glUniform1f(mHaaCoef, aaCoef);//美颜程度参数
+        GLES20.glUniform1f(mHmixCoef, mixCoef);//美颜程度参数
+        GLES20.glUniform1i(mHiternum, iternum);//美颜程度参数
         GLES20.glEnableVertexAttribArray(mBeautyVertexLocation);
         GLES20.glVertexAttribPointer(mBeautyVertexLocation, 2, GLES20.GL_FLOAT, false, 0, mBeautyVertexBuffer);
         GLES20.glEnableVertexAttribArray(mBeautyTextureCoordLocation);
@@ -367,7 +367,7 @@ public class BeautyRender implements GLSurfaceView.Renderer {
         /*************使用last texture画在屏幕上**********************/
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0); //绑定回默认输出buffer，就是屏幕，然后绘画
         GLES20.glUseProgram(mLastProgram);
-        GLES20.glUniformMatrix4fv(mLastMatrixLocation, 1, false, mLastMatrix, 0);
+        GLES20.glUniformMatrix4fv(mLastMatrixLocation, 1, false, mLastMatrix, 0);//需要反转
         GLES20.glEnableVertexAttribArray(mLastVertexLocation);
         GLES20.glVertexAttribPointer(mLastVertexLocation, 2, GLES20.GL_FLOAT, false, 0, mLastVertexBuffer);
         GLES20.glEnableVertexAttribArray(mLastCoordLocation);

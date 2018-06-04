@@ -258,7 +258,7 @@ public class CameraRender2 implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        synchronized (mSurfaceTexture) {
+        synchronized (mSurfaceTexture) {//两个渲染器在各自线程下运作，调用的是不同线程下的不同控件的方法，而SurfaceTexture又是同一个，所以同时attach是有可能的。
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             mSurfaceTexture.attachToGLContext(mTextureID);
 

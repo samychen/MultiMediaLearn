@@ -189,7 +189,7 @@ void WlVideo::decodVideo() {
         if(codecType == 1)
         {
             AVPacket *packet = av_packet_alloc();
-            if(queue->getAvpacket(packet) != 0)
+            if(queue->getAvpacket(packet) != 0)//得到的是经过包体填充之后的AVpacket
             {
                 av_free(packet->data);
                 av_free(packet->buf);
@@ -224,9 +224,9 @@ void WlVideo::decodVideo() {
             {
                 playcount = 0;
             }
-            if(diff >= 0.5)
+            if(diff >= 0.5)// 丢帧处理
             {
-                if(frameratebig)
+                if(frameratebig)//高清视频
                 {
                     if(playcount % 3 == 0 && packet->flags != AV_PKT_FLAG_KEY)
                     {
@@ -251,8 +251,9 @@ void WlVideo::decodVideo() {
                 LOGE("delay time %f diff is %f", delayTime, diff);
             }
 
-            av_usleep(delayTime * 1000);
-            wljavaCall->onVideoInfo(WL_THREAD_CHILD, clock, duration);
+            av_usleep(delayTime * 1000);//同步视频到音频
+            wljavaCall->onVideoInfo(WL_THREAD_CHILD, clock, duration);//设置当前播放时间和总时间
+            // 硬解码需要在本地填充包体信息后的AVPacket给Mediacodec解码
             wljavaCall->onDecMediacodec(WL_THREAD_CHILD, packet->size, packet->data, 0);
             av_free(packet->data);
             av_free(packet->buf);
@@ -273,7 +274,7 @@ void WlVideo::decodVideo() {
             {
                framePts = 0;
             }
-            framePts *= av_q2d(time_base);
+            framePts *= av_q2d(time_base);//视频未来显示的时间戳
             clock = synchronize(frame, framePts);
             double diff = 0;
             if(wlAudio != NULL)
@@ -292,7 +293,6 @@ void WlVideo::decodVideo() {
 //                frame = NULL;
 //                continue;
 //            }
-
             playcount++;
             if(playcount > 500)
             {
@@ -307,6 +307,7 @@ void WlVideo::decodVideo() {
                         av_frame_free(&frame);
                         av_free(frame);
                         frame = NULL;
+                        // 丢弃非关键帧直到下一关键帧
                         queue->clearToKeyFrame();
                         continue;
                     }
@@ -314,13 +315,15 @@ void WlVideo::decodVideo() {
                     av_frame_free(&frame);
                     av_free(frame);
                     frame = NULL;
+                    // 丢弃非关键帧直到下一关键帧
                     queue->clearToKeyFrame();
                     continue;
                 }
             }
 
             av_usleep(delayTime * 1000);
-            wljavaCall->onVideoInfo(WL_THREAD_CHILD, clock, duration);
+            wljavaCall->onVideoInfo(WL_THREAD_CHILD, clock, duration);//设置当前播放时间和总时间
+            //软解码直接GL线程渲染YUV
             wljavaCall->onGlRenderYuv(WL_THREAD_CHILD, frame->linesize[0], frame->height, frame->data[0], frame->data[1], frame->data[2]);
             av_frame_free(&frame);
             av_free(frame);

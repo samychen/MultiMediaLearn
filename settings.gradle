@@ -1,1 +1,1 @@
-include ':app', ':library', 'filterRecord', 'glestest', ':libwlplayer', 'wlplayer'
+include ':app', ':library', 'filterRecord', 'glestest', ':libwlplayer', 'wlplayer', ':firework', 'fireworkapp', 'Breakout-Android-Game', 'PlayVideo-OpenGL', 'wlmusic'

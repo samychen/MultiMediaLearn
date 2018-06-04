@@ -84,13 +84,10 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
     private int aPositionHandle_stop;
     private int aTextureCoordHandle_stop;
 
-
     int codecType = -1;
     private boolean cutimg = false;
     private int sWidth = 0;
     private int sHeight = 0;
-
-
 
     private WlOnGlSurfaceViewOncreateListener wlOnGlSurfaceViewOncreateListener;
     private WlOnRenderRefreshListener wlOnRenderRefreshListener;
@@ -142,7 +139,6 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
         GLES20.glViewport(0,0,width, height);
     }
 
-
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -161,7 +157,7 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
         {
             renderStop();
         }
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);//避免黑屏
         if(cutimg)
         {
             cutimg = false;
@@ -228,7 +224,7 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
     private void renderMediacodec()
     {
         GLES20.glUseProgram(programId_mediacodec);
-        surfaceTexture.updateTexImage();
+        surfaceTexture.updateTexImage();//根据内容流中最近的图像更新SurfaceTexture对应的GL纹理对象
         vertexBuffer.position(0);
         GLES20.glEnableVertexAttribArray(aPositionHandle_mediacodec);
         GLES20.glVertexAttribPointer(aPositionHandle_mediacodec, 3, GLES20.GL_FLOAT, false,
@@ -237,9 +233,9 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
         GLES20.glEnableVertexAttribArray(aTextureCoordHandle_mediacodec);
         GLES20.glVertexAttribPointer(aTextureCoordHandle_mediacodec,2,GLES20.GL_FLOAT,false,8, textureBuffer);
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);//启用纹理单元0
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureid_mediacodec);
-        GLES20.glUniform1i(uTextureSamplerHandle_mediacodec,0);
+        GLES20.glUniform1i(uTextureSamplerHandle_mediacodec,0);//和上文启用纹理单元0对应
     }
 
     private void initYuvShader()
@@ -253,13 +249,13 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
         sampler_y = GLES20.glGetUniformLocation(programId_yuv, "sampler_y");
         sampler_u = GLES20.glGetUniformLocation(programId_yuv, "sampler_u");
         sampler_v = GLES20.glGetUniformLocation(programId_yuv, "sampler_v");
-        //生成三张纹理
+        // 生成Y，U，V 三张纹理
         textureid_yuv = new int[3];
         GLES20.glGenTextures(3, textureid_yuv, 0);
         for (int i = 0; i < 3; i++) {
             // 绑定纹理空间
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureid_yuv[i]);
-            //设置属性 当显示的纹理比加载的纹理大时 使用纹理坐标中最接近的若干个颜色 通过加权算法获得绘制颜色
+            // 设置属性，当显示的纹理比加载的纹理大时 使用纹理坐标中最接近的若干个颜色 通过加权算法获得绘制颜色
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             // 比加载的小
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
@@ -268,7 +264,10 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
         }
     }
-    //软解码
+
+    /**
+     *  软解码
+     */
     private void renderYuv()
     {
         if(w > 0 && h > 0 && y != null && u != null && v != null)
@@ -291,7 +290,6 @@ public class WlGlRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFram
             GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_LUMINANCE, w, h, 0, GLES20.GL_LUMINANCE, GLES20.GL_UNSIGNED_BYTE, y);
             //绑定采样器与纹理单元
             GLES20.glUniform1i(sampler_y, 0);
-
 
             GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureid_yuv[1]);
